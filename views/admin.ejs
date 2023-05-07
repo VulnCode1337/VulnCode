@@ -1,0 +1,31 @@
+<div class="container mt-5">
+    <h2>Add Vulnerability</h2>
+    <form action="/add-vulnerability" method="post">
+      <select class="form-control" name="vulnClass" id="vulnClass">
+        <% myVulnList.forEach((item) => { %>
+          <option value="<%= item.value %>"><%= item.display %></option>
+        <% }) %>
+      </select>          
+      <div class="form-group">
+        <label for="codeblock">Code Block:</label>
+        <textarea class="form-control" name="codeblock" id="codeblock" rows="5" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="language">Language:</label>
+        <input type="text" class="form-control" name="language" id="language" required>
+      </div>
+      <div class="form-group">
+        <label for="explanation">Explanation:</label>
+        <input type="text" class="form-control" name="explanation" id="explanation" required>
+      </div>
+      <div class="form-group">
+        <label for="difficultyRating">Difficulty Rating:</label>
+        <select class="form-control" name="difficultyRating" id="difficultyRating" required>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>

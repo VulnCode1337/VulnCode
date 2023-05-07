@@ -1,0 +1,38 @@
+<div class="container mt-5">
+  <h2>Secure Code Practice</h2>
+  <h4>Identify the vulnerability in the codeblock</h4>
+  <% vulnerabilities.forEach((vulnerability) => { %>
+    <table class="table">
+      <tbody>
+        <tr>
+          <th scope="row">Difficulty</th>
+          <td><%= vulnerability.difficultyRating %></td>
+        </tr>
+        <tr>
+          <th scope="row">Language</th>
+          <td><%= vulnerability.language %></td>
+        </tr>
+        <tr>
+          <th scope="row">Code Block</th>
+          <td>
+            <pre><code class="language-<%= vulnerability.language.toLowerCase() %>"><%- vulnerability.codeblock %></code></pre>
+          </td>          
+        </tr>
+        <tr> <!-- Add a new table row for the select element -->
+          <th scope="row"><bold>Answer:::</bold></th>
+          <td>
+            <select class="form-control" name="vulnClass" id="vulnClass">
+              <% myVulnList.forEach((item) => { %>
+                <option value="<%= item.value %>" <% if (vulnClass === item.value) { %>selected="selected"<% } %>><%= item.display %></option>
+              <% }) %>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Explanation</th>
+          <td><%= vulnerability.explanation %></td>
+        </tr>
+      </tbody>
+    </table>
+  <% }) %>
+</div>
