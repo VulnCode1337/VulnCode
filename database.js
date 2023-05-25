@@ -8,7 +8,7 @@ PS C:\Program Files\MongoDB\Server\6.0\bin> Get-Content ..\log\mongod.log -Wait
 const mongoose = require('mongoose');
 
 // connection URL
-const url = 'mongodb://127.0.0.1:27017/vulncodeserverDB';
+const url = process.env.MONGODB_URI ||'mongodb://127.0.0.1:27017/vulncodeserverDB';
 
 async function connectToMongo() {
     try {
