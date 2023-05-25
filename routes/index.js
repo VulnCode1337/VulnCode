@@ -220,10 +220,14 @@ router.post('/secure-code-practice', async (req, res) => {
                             myVulnList: myVulnList,
                             jsError: null,
                             vulnClass: vulnClass });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server error');
-    }
+        } catch (err) {
+            console.error(err);
+            if (err instanceof mongoose.Error) {
+                res.status(500).send('Database error');
+            } else {
+                res.status(500).send('Server error');
+            }
+        }             
 });
 
 

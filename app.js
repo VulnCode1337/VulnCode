@@ -19,15 +19,21 @@ const upload = multer();
 app.use(express.static('public'));
 
 
+const sessionStore = MongoStore.create({ 
+    mongoUrl: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vulncodeserverDB',
+    ttl: 14 * 24 * 60 * 60 // = 14 days. Default
+});
+
+sessionStore.on('error', function(error) {
+    console.error('Session store error:', error);
+});
+
 app.use(session({
     secret: '!@#$1234',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ 
-        mongoUrl: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vulncodeserverDB',
-        ttl: 14 * 24 * 60 * 60 // = 14 days. Default
-    })
-  }));
+    store: sessionStore
+    }));
 
 app.use(passport.initialize());
 app.use(passport.session());
