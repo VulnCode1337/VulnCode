@@ -1,38 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <link rel="stylesheet" type="text/css" href="/styles.css">
 <div class="container mt-5">
+  <style>
+    .table.no-border tbody tr td,
+    .table.no-border tbody tr th {
+      border: none;
+    }
+    .modal-content .modal-header::after,
+    .modal-content .modal-body::after,
+    .modal-content .modal-footer::before,
+    .modal-content .modal-footer::after {
+      display: none;
+    }
+    .modal-header, .modal-footer {
+      border: none;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+    #codeBlock {
+      user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+    .explanation-text {
+    background-color: #f9f9f9;  /* light gray */
+    border: 1px solid #ddd;  /*  border */
+    padding: 15px;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;  
+    border-radius: 5px;
+    transition: all 0.3s ease;  /* for a smooth transition effect */
+    }
+    #explanationBtn {
+    background-color: #29db29;  /* info button color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition: all 0.5s;  /* for a smooth transition effect */
+    cursor: pointer;
+    border-radius: 4px;
+    }
+    #explanationBtn:hover {
+      background-color: #0056b3;  /* darker blue */
+      color: white;
+    }
+
+  </style>
   <h2>Secure Code Practice</h2>
-  <h4>Identify the vulnerability in the codeblock</h4>
-  <% vulnerabilities.forEach((vulnerability) => { %>
-    <table class="table">
-      <tbody>
-        <tr>
-          <th scope="row">Difficulty</th>
-          <td><%= vulnerability.difficultyRating %></td>
-        </tr>
-        <tr>
-          <th scope="row">Language</th>
-          <td><%= vulnerability.language %></td>
-        </tr>
-        <tr>
-          <th scope="row">Code Block</th>
-          <td>
-            <pre><code class="language-<%= vulnerability.language.toLowerCase() %>"><%- vulnerability.codeblock %></code></pre>
-          </td>          
-        </tr>
-        <tr> <!-- Add a new table row for the select element -->
-          <th scope="row"><bold>Answer:::</bold></th>
-          <td>
+  <h4>Identify the vulnerability</h4>
+  <table class="table no-border">
+    <tbody>
+      <!-- difficulty rating -->
+      <tr>
+        <th scope="row">Difficulty</th>
+        <td id="difficulty"><%= vulnerability.difficultyRating %></td>
+      </tr>
+      <!-- language  -->
+      <tr>
+        <th scope="row">Language</th>
+        <td id="language"><%= vulnerability.language %></td>
+      </tr>
+      <!--  codeblock -->
+      <tr>
+        <th scope="row">Code Block</th>
+        <td>
+          <pre id="codeBlock"><code id="code" class="language-<%= vulnerability.language.toLowerCase() %>"><%- vulnerability.codeblock %></code></pre>
+        </td>
+      </tr>      
+      <!-- SUBMIT ANSWER FORM -->
+      <tr>
+        <th scope="row"><bold>Select Answer</bold></th>
+        <td>
+          <form action="/submit-answer" method="POST">
             <select class="form-control" name="vulnClass" id="vulnClass">
+              <!-- VulnClass List -->
+              <option value ="" selected>Choose a web vulnerability class</option>
               <% myVulnList.forEach((item) => { %>
-                <option value="<%= item.value %>" <% if (vulnClass === item.value) { %>selected="selected"<% } %>><%= item.display %></option>
-              <% }) %>
-            </select>
+                <option value="<%= item.value %>"><%= item.display %></option>
+                <% }) %>
+              </select>
+              <input type="hidden" name="vulnerabilityId" value="<%= vulnerability._id %>">
+              <button type="submit" id="submitAnswerBtn" class="btn btn-primary mt-2">Submit Answer</button>
+            </form>
           </td>
-        </tr>
-        <tr>
-          <th scope="row">Explanation</th>
-          <td><%= vulnerability.explanation %></td>
-        </tr>
-      </tbody>
-    </table>
-  <% }) %>
+      </tr>
+      <!-- HINT BUTTON -->
+      <tr>
+        <th scope="row"></th>
+        <td>
+          <button type="button" id="hintBtn" class="btn btn-info" style="display: none;">Hint</button>
+          <div id="hint" class="mt-2" style="display: none;"></div>
+        </td>
+      </tr>
+      <!-- EXPLANATION BUTTON -->
+      <tr>
+        <th scope="row"></th>
+        <td>
+          <button type="button" id="explanationBtn" class="btn btn-info" style="display: none;">Show Explanation</button>
+          <br>
+          <div id="explanation" class="mt-2 explanation-text" style="display: none;"></div>
+        </td>
+      </tr>
+      <!-- NEXT BUTTON -->
+      <tr>
+        <th scope="row"></th>
+        <td>
+          <button type="submit" id="nextVuln" class="btn btn-primary" style="display: none;">Next</button>
+        </td>
+      </tr>        
+    </tbody>
+    <!-- Answer Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="messageModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="messageModalBody">
+            <!-- Message will go here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Hint Modal -->
+    <div class="modal" tabindex="-1" role="dialog" id="hintModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Hint</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p id="hintText"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>       
+  </table>
+  <script>
+    const vulnerabilityIdInput = document.querySelector('input[name="vulnerabilityId"]');
+    const explanationBtn = document.getElementById('explanationBtn');
+    const nextVulnBtn = document.getElementById('nextVuln');
+    const hintBtn = document.getElementById('hintBtn');
+    const submitBtn = document.getElementById('submitAnswerBtn');
+
+    // disable contextmenu
+    window.onload = function() {
+      document.getElementById('codeBlock').addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+    };
+
+    // modal. Response to submit answer
+    function showMessage(message, show) {
+      const modalBody = document.getElementById('messageModalBody');
+      modalBody.innerHTML = message;
+      if (show) {
+        $('#messageModal').modal('show');
+      }
+    };
+    
+    // SUBMIT Button. Logic 
+    document.querySelector('form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const vulnerabilityId = vulnerabilityIdInput.value;
+      const formData = new FormData(event.target);
+      formData.append('vulnerabilityId', vulnerabilityId);
+      try {
+      const response = await fetch('/submit-answer', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+
+      // Vuln Game Client-Side Logic 
+      if (result.success_msg || result.error_msg) {
+        showMessage(result.success_msg || result.error_msg, true);
+        
+        if (result.error_msg) {
+          // Get the current count of incorrect answers for this vulnerability from sessionStorage
+          const incorrectCount = Number(sessionStorage.getItem(vulnerabilityId)) || 0;
+
+          // Increase the count by 1 and save back to sessionStorage
+          sessionStorage.setItem(vulnerabilityId, incorrectCount + 1);
+
+          if (incorrectCount + 1 === 2) {
+            // 2x
+            hintBtn.style.display = 'block';
+          } else if (incorrectCount + 1 >= 3) {
+            // 3x
+            hintBtn.style.display = 'none';
+            explanationBtn.style.display = 'block';
+            nextVulnBtn.style.display = 'block';
+            // Hide the submit button
+            submitBtn.style.display = 'none';
+          }
+        } else if (result.success_msg) {
+          // User has answered the question correctly
+          hintBtn.style.display = 'none';
+          explanationBtn.style.display = 'block';
+          nextVulnBtn.style.display = 'block';
+          submitBtn.style.display = 'none';
+          // Reset the count of incorrect answers for this vulnerability in sessionStorage
+          sessionStorage.setItem(vulnerabilityId, 0);
+        }
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+    });
+
+    // EXPLANATION button event handler
+    $('#explanationBtn').click(async function(event) {
+      try {
+        const response = await fetch('/explanation/' + vulnerabilityIdInput.value);
+        const explanation = await response.text();
+        $('#explanation').html(explanation);
+        $('#explanation').slideDown(2000);  // slides down the explanation text in 500ms
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    });
+    
+    // HINT Button event handler
+    hintBtn.addEventListener('click', async function(event) {
+      try {
+        const response = await fetch('/hint/' + vulnerabilityIdInput.value);
+        const hint = await response.text();
+        // get hint modal and text elements
+        const hintModal = document.getElementById('hintModal');
+        const hintText = document.getElementById('hintText');
+        // set hint text
+        hintText.innerHTML = hint;
+        // show the hint modal
+        $(hintModal).modal('show');
+      } catch (error) {
+        console.error('An error occurred: ', error);
+      }
+    });
+
+    // NEXT button event handler
+    nextVulnBtn.addEventListener('click', async function(event) {
+      try {
+        // store current vulnID
+        const currentVulnerabilityId = vulnerabilityIdInput.value;
+        const response = await fetch('/secure-code-practice/start', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nextVuln: true })
+        });
+        const nextVulnerability = await response.json();
+        document.getElementById('difficulty').innerText = nextVulnerability.difficultyRating;
+        document.getElementById('language').innerText = nextVulnerability.language;
+        document.getElementById('code').innerHTML = nextVulnerability.codeblock;
+        hljs.highlightAll();
+        document.getElementById('explanation').innerHTML = '';
+        document.getElementById('hint').innerHTML = '';
+        vulnerabilityIdInput.value = nextVulnerability._id;
+
+        // reset form: hide Message, Explanation, Hint and Next
+        document.querySelector('form').reset();
+        $('#messageModal').modal('hide');
+        explanationBtn.style.display = 'none';
+        document.getElementById('explanation').style.display = 'none';
+        nextVulnBtn.style.display = 'none';
+        hintBtn.style.display = 'none';
+        submitBtn.style.display = 'block';
+        // reset incorrect count for new vuln
+        sessionStorage.removeItem(currentVulnerabilityId);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    });
+</script>
 </div>
+</html>

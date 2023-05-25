@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
     "connect-flash": "^0.1.1",
     "dompurify": "^3.0.2",
     "ejs": "^3.1.9",
@@ -20,8 +21,10 @@
     "jsdom": "^22.0.0",
     "mongodb": "^5.3.0",
     "mongoose": "^7.1.0",
+    "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
+    "path": "^0.12.7",
     "validator": "^13.9.0"
   }
 }

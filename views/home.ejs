@@ -1,4 +1,99 @@
-<h3>Welcome to my web application</h3>
-<p>I created this app specifically for my Google Mandiant application and interview process.<br>
-I decided that a live server can effectively demonstrate many skills required for a web <br>
-application penetration tester.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to VulnCode</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body class="home-body">
+    <!-- Hero Section -->
+    <header class="jumbotron">
+        <h1>Welcome to VulnCode</h1>
+        <p>"Helping red teamers sharpen their secure code review skills"</p>
+        <a href="/secure-code-practice" class="btn home-btn-primary btn-lg">Get Started</a>
+        <button id="miroButton" class="btn home-btn-secondary btn-lg ml-3">Mind Map</button>
+    </header>    
+    <div id="miroModal" class="home-page-modal">
+        <div class="home-page-modal-content">
+            <span class="close">&times;</span>
+            <button id="fullscreenBtn" class="fullscreenBtn">Fullscreen</button>
+        </div>
+    </div>
+    <!-- Your Miro iframe, set to be invisible initially -->
+    <iframe 
+        id="miro-iframe" 
+        style="display: none; width:100%; height:100%"
+        src="https://miro.com/app/live-embed/uXjVML-_GYg=/?moveToViewport=-220,-135,432,336&embedId=512547403964&embedAutoplay=true" 
+        scrolling="no" 
+        allow="fullscreen; clipboard-read; clipboard-write" 
+        allowfullscreen
+        frameborder="0">
+    </iframe>
+    <script>
+    var modal = document.getElementById("miroModal");
+    var btn = document.getElementById("miroButton");
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks the button, open the modal 
+    btn.onclick = function() {
+        var miroIframe = document.getElementById('miro-iframe');
+        document.querySelector('.home-page-modal-content').appendChild(miroIframe);
+        miroIframe.style.display = 'block';
+        modal.style.display = 'block';
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+        // Exit fullscreen mode when modal is closed
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari 
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+    }
+    
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+    }
+    // get the modal content
+    var content = document.querySelector('.home-page-modal-content');
+    // get the fullscreen button
+    var fullscreenBtn = document.getElementById('fullscreenBtn');
+    // function to open fullscreen mode
+    function openFullscreen() {
+        if (content.requestFullscreen) {
+            content.requestFullscreen();
+        }   else if (content.mozRequestFullScreen) {
+            content.mozRequestFullScreen(); // FF
+        }   else if (content.webkitRequestFullscreen) {
+            content.webkitRequestFullscreen(); // chrome, safari, 
+        }   else if (content.msRequestFullscreen) {
+            content.msRequestFullscreen(); // IE/edge
+        }
+    }
+    // when user clicks fullscreen button
+    fullscreenBtn.onclick = function() {
+        openFullscreen();
+    }
+    document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+            document.getElementById('fullscreenBtn').style.display = 'none';
+        }   else {
+            document.getElementById('fullscreenBtn').style.display = 'block';
+        }
+    });
+    </script>
+</body>
+<footer>
+    <p>"Learning becomes research when you can no longer find resources." -Me </p>
+</footer>
+</html>

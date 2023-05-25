@@ -1,17 +1,22 @@
 const express = require('express');
 const db = require('./database.js');
-const routes = require('./routes'); // custom routing 
+const routes = require('./routes'); 
 const path = require('path');
 const session = require('express-session');
 const passport = require('passport');
+const multer = require('multer');
 const flash = require('connect-flash');
+
 require('./config/passport')(passport); // Passport configuration
 
 
+// configure multipart form handling with no file uploads
 const app = express();
+const upload = multer();
 
+// setup public dir for additional files
+app.use(express.static('public'));
 
-app.use(express.static('public')); // route to /public directory
 
 app.use(session({
   secret: '!@#$1234',
@@ -23,14 +28,15 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-
 // setup flash for auth related messages
 app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error'); // passport error messages
     next();
-})
+});
+
+app.use(upload.none()); // ensure no file uploads
 
 app.use('/', routes);
 

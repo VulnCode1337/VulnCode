@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Select Difficulty Level</title>
-
   <!-- Include Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
@@ -23,6 +22,89 @@
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <table class="table">
+      <tr class="green-row">
+        <td>1</td>
+        <td>Relatively simple</td>
+      </tr>
+      <tr class="orange-row">
+        <td>2</td>
+        <td>Intermediate</td>
+      </tr>
+      <tr class="red-row">
+        <td>3</td>
+        <td>Challenging</td>
+      </tr>
+    </table>
   </div>
+  <style>
+    .green-row {
+      background-color: #00FF00; /* Green */
+    }
+    .orange-row {
+      background-color: #FFA500; /* Orange */
+    }
+    .red-row {
+      background-color: #FF0000; /* Red */
+    }
+    .table {
+      display: inline-block;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    .table td {
+      padding: 10px;
+      /* border: 1px solid #000; */
+    }
+    .table td:first-child {
+      width: 20px;
+    }
+    .table td:last-child {
+      width: calc(100% - 20px);
+    }
+  </style>
+  
+  
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Secure Code Review Practice!</h5>
+        </div>
+        <div class="modal-body">
+          <p>It's time to put your skills to the test!</p>
+          <p>Read the codeblock, then identify the vulnerability.<br>There is only one vulnerability per exercise.</p>
+          <p>Each exercise has an <strong>Explanation</strong> which becomes available<br>
+            after a correct answer or 3 wrong answers.</p>
+          <p>Here is your full list of <u>web-based</u> vulns:</p>
+          <ul style="font-size: 0.8em;">
+            <% for (let i = 0; i < myVulnList.length; i++) { %>
+              <li><%= myVulnList[i].display %></li>
+            <% } %>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    // run the welcome modal after DOM loads
+    $(document).ready(function() {
+      function showWelcomeModal() {
+        // has the user clicked the button yet?
+        const visitedBefore = sessionStorage.getItem('clickedSecureCodeButton');
+        if (!visitedBefore) {
+          $('#myModal').modal('show');
+          sessionStorage.setItem('clickedSecureCodeButton', true);
+        }
+      };
+      showWelcomeModal();
+    });
+  </script>
 </body>
 </html>
